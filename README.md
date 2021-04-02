@@ -1,3 +1,3 @@
 # bg
 
-A backgammon engine (enventually, possibly). Primarily an excuse to learn some Rust.
+A backgammon engine (eventually, possibly). Primarily an excuse to learn some Rust.
