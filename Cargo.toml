@@ -1,8 +1,6 @@
-[package]
-name = "bg"
-version = "0.1.0"
-authors = ["Philippe Suter <philippe.suter@gmail.com>"]
-edition = "2018"
+[workspace]
 
-[dependencies]
-rand = "0.7.3"
+members = [
+    'bg-core',
+    'bg-cli'
+]

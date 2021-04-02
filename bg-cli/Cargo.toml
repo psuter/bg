@@ -1,0 +1,9 @@
+[package]
+name = "bg-cli"
+version = "0.1.0"
+authors = ["Philippe Suter <philippe.suter@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+bg-core = { path = "../bg-core" }
+rand = "0.8.3"
