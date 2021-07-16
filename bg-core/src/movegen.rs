@@ -1,17 +1,14 @@
 use std::cmp::Ordering;
 use std::collections::HashSet;
-use std::iter::FromIterator;
 
 use super::dice::Dice;
 use super::position::Position;
 
 pub fn generate_o_moves(position: &Position, dice: &Dice) -> HashSet<Position> {
     if dice.is_double() {
-        let one_move: HashSet<Position> = HashSet::from_iter(
-            generate_one_die_moves(position, dice.high())
-                .iter()
-                .copied(),
-        );
+        let one_move: HashSet<Position> = generate_one_die_moves(position, dice.high())
+            .into_iter()
+            .collect();
 
         if one_move.is_empty() {
             return HashSet::new();
@@ -139,21 +136,6 @@ fn generate_one_die_moves(position: &Position, die: u8) -> Vec<Position> {
 
                     // We must always recall we've seen a checker before considering lower points.
                     seen_higher = true;
-
-                    /*
-                    if point + 1 == die {
-                        // It's always possible to bear that off.
-                        // But we must also remember we saw it.
-                        let new_position = position.with_o_bearing_off(point);
-                        results.push(new_position);
-                    } else if point + 1 < die {
-                        // We can only move if we haven't seen anything higher.
-                        if !seen_higher {
-                            let new_position = position.with_o_bearing_off(point);
-                            results.push(new_position);
-                        }
-                    }
-                    */
                 }
             }
         }

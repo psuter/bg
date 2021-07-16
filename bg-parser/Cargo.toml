@@ -1,10 +1,13 @@
 [package]
-name = "bg-cli"
+name = "bg-parser"
 version = "0.1.0"
 authors = ["Philippe Suter <philippe.suter@gmail.com>"]
 edition = "2018"
 
+[build-dependencies]
+lalrpop = "0.19.5"
+
 [dependencies]
 bg-core = { path = "../bg-core" }
-bg-parser = { path = "../bg-parser" }
-rand = "0.8.3"
+lalrpop-util = "0.19.5"
+regex = "1"
