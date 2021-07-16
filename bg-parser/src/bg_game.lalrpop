@@ -1,0 +1,102 @@
+use std::str::FromStr;
+
+use bg_core::dice::Dice;
+use bg_core::moves::{CheckerMove, Move};
+
+grammar;
+
+// Anything that can be used as a valid player identifier.
+// This may need revisiting.
+pub PlayerIdentifier: () = {
+    <s:r"[A-Za-z]+"> => ()
+}
+
+// An non-zero int literal, by itself.
+// Used in match/game headers, game reuslts, and doubling decisions.
+pub NonZeroIntLiteral: u32 = {
+    <s:r"([1-9][0-9]*)"> => {
+        u32::from_str(s).unwrap()
+    }
+}
+
+// For when we need to accept 0.
+pub IntLiteral: u32 = {
+    "0" => 0,
+    <i:NonZeroIntLiteral> => i,
+}
+
+// The match header. Includes the duration in points.
+pub MatchHeader: u32 = {
+    <i:NonZeroIntLiteral> "point match" => i,
+}
+
+// A game header.
+// It includes the game index and player scores, though we don't anything for consistency.
+pub GameHeader: () = {
+    "Game" <NonZeroIntLiteral> <PlayerIdentifier> ":" <IntLiteral> <PlayerIdentifier> ":" <IntLiteral> => (),
+}
+
+// A turn index.
+pub TurnIndex: u64 = {
+    <s:r"[1-9][0-9]*\)"> => {
+        u64::from_str(&s[0..s.len()-1]).unwrap()
+    }
+}
+
+// A roll. Probably guaranteed to be high die, then low die but we won't assume it.
+pub Roll: Dice = {
+    <s:r"[1-6]{2}:"> => {
+        let num = u8::from_str(&s[0..2]).unwrap();
+        Dice::make(num / 10, num % 10)
+    }
+}
+
+pub CubeAction: () = {
+    "Doubles =>" <NonZeroIntLiteral> => (),
+    "Takes" => (),
+    "Drops" => (),
+}
+
+// A single checker move.
+pub CheckerMove: CheckerMove = {
+    <s:r"[0-9]{1,2}/[0-9]{1,2}\*?"> => {
+        let l = s.len();
+        let hits = &s[l-1..] == "*";
+        let s = if hits { &s[0..l-1] } else { s };
+        let parts: Vec<&str> = s.split("/").collect();
+
+        CheckerMove::make(
+            u8::from_str(parts[0]).unwrap(),
+            u8::from_str(parts[1]).unwrap(),
+            hits
+        )
+    }
+}
+
+pub Move: Move = {
+    <r:Roll> <m:(CheckerMove)*> => Move::make(r, m)
+}
+
+// A player action (move or cube).
+// Eventually this should store the cube action as well.
+pub MoveOrCubeAction: Option<Move> = {
+    <m:Move> => Some(m),
+    <c:CubeAction> => None,
+}
+
+// One turn.
+// A player's move may be empty if, e.g., it's the first turn and the
+// second player is starting, or there was a cube action (FIXME support them).
+pub Turn: (Option<Move>, Option<Move>) = {
+    <t:TurnIndex> <m1:MoveOrCubeAction> <m2:MoveOrCubeAction> => (m1, m2),
+    <t:TurnIndex> <m2:MoveOrCubeAction> => (None, m2),
+}
+
+pub Game: () = {
+    
+}
+
+pub Match: () = {
+   // MatchHeader Game*
+}
+

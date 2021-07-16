@@ -5,24 +5,26 @@ use std::fmt;
 // const DICE_CHARS: [char; 6] = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 const DICE_CHARS: [char; 6] = ['1', '2', '3', '4', '5', '6'];
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Dice {
     first: u8,
     second: u8,
 }
 
 impl Dice {
-    #[cfg(test)]
     pub fn make(first: u8, second: u8) -> Dice {
-        if first < 1 || first > 6 {
+        if !(1..=6).contains(&first) {
             panic!("Invalid die value: {}", first);
         }
 
-        if second < 1 || second > 6 {
+        if !(1..=6).contains(&second) {
             panic!("Invalid die value: {}", second);
         }
 
-        Dice { first, second }
+        Dice {
+            first: max(first, second),
+            second: min(first, second),
+        }
     }
 
     pub fn roll() -> Dice {
@@ -34,11 +36,11 @@ impl Dice {
     }
 
     pub fn high(&self) -> u8 {
-        max(self.first, self.second)
+        self.first
     }
 
     pub fn low(&self) -> u8 {
-        min(self.first, self.second)
+        self.second
     }
 
     pub fn is_double(&self) -> bool {
@@ -57,19 +59,13 @@ impl fmt::Display for Dice {
     }
 }
 
-impl PartialEq for Dice {
-    fn eq(&self, other: &Self) -> bool {
-        self.high() == other.high() && self.low() == other.low()
-    }
-}
-
 impl Eq for Dice {}
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    const TEST_ROLLS: u32 = 100_000;
+    const TEST_ROLLS: u32 = 1_000_000;
 
     #[test]
     fn test_dist_1() -> () {

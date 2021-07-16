@@ -46,6 +46,10 @@ impl Position {
         self.x_home == 15
     }
 
+    pub fn is_over(&self) -> bool {
+        self.o_has_won() || self.x_has_won()
+    }
+
     pub fn o_has_gammoned(&self) -> bool {
         self.o_has_won() && self.x_home == 0
     }

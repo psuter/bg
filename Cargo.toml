@@ -1,6 +1,7 @@
 [workspace]
 
 members = [
+    'bg-cli',
     'bg-core',
-    'bg-cli'
+    'bg-parser'
 ]

@@ -1,8 +1,8 @@
 use rand::Rng;
 
 use super::dice::Dice;
-use super::movegen::generate_x_moves;
 use super::movegen::generate_o_moves;
+use super::movegen::generate_x_moves;
 use super::position::Position;
 
 #[derive(Debug)]
@@ -79,6 +79,6 @@ pub fn rollout_o(position: &Position) -> RolloutStats {
         o_backgammon: f64::from(o_backgammons) / rolls,
         x_win: f64::from(x_wins) / rolls,
         x_gammon: f64::from(x_gammons) / rolls,
-        x_backgammon: f64::from(x_backgammons) / rolls
+        x_backgammon: f64::from(x_backgammons) / rolls,
     }
 }

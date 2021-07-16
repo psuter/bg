@@ -1,16 +1,14 @@
 use bg_core::dice::Dice;
 use bg_core::movegen::{generate_o_moves, generate_x_moves};
 use bg_core::position::Position;
-use bg_core::rollout::rollout_o;
+use bg_core::rollout;
 
 use rand::Rng;
-// use std::time::{Duration, Instant};
-
-
+use std::time::{Duration, Instant};
 
 fn main() {
     print!("hello world");
-    /*
+
     let start = Instant::now();
     let p = Position::initial();
     let stats = rollout::rollout_o(&p);
@@ -22,7 +20,6 @@ fn main() {
     println!("Micros per game: {}", micros / u128::from(stats.rolls));
 
     println!("{:?}", stats);
-    */
 
     let mut p = Position::initial();
     let mut o_turn = true;
@@ -31,7 +28,7 @@ fn main() {
         if rand::thread_rng().gen_range(0..20) == 0 {
             println!("Rollout requested...");
             println!("{}", p);
-            let s = rollout_o(&p);
+            let s = rollout::rollout_o(&p);
             println!("{:?}", s);
         }
 
