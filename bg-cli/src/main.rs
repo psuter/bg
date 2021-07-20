@@ -1,19 +1,57 @@
+use std::env;
+use std::fs;
+use std::time;
+
 use bg_core::dice::Dice;
+use bg_core::game::Match;
 use bg_core::movegen::{generate_o_moves, generate_x_moves};
 use bg_core::position::Position;
 use bg_core::rollout;
 
+use bg_parser::parse_match;
+
 use rand::Rng;
-use std::time::{Duration, Instant};
+
+fn load_match(filename: &str) -> Match {
+    let contents = fs::read_to_string(filename).expect("Something went wrong reading the file.");
+    parse_match(&contents).unwrap()
+}
 
 fn main() {
-    print!("hello world");
+    let args: Vec<String> = env::args().collect();
+    let mtch = load_match(&args[1]);
 
-    let start = Instant::now();
+    let g1 = &mtch.games[0];
+
+    let mut p = Position::initial();
+    println!("{}", p);
+
+    for turn in &g1.turns {
+        let o_move = &turn.0;
+        let x_move = &turn.1;
+
+        for om in o_move {
+            p = p.apply_o_move(om);
+            println!("o -> {}", om);
+            println!("{}", p);
+        }
+
+        for xm in x_move {
+            p = p.apply_x_move(xm);
+            println!("x -> {}", xm);
+            println!("{}", p);
+        }
+    }
+
+    if 2 < 3 {
+        return;
+    }
+
+    let start = time::Instant::now();
     let p = Position::initial();
     let stats = rollout::rollout_o(&p);
-    let finish = Instant::now();
-    let duration: Duration = finish.duration_since(start);
+    let finish = time::Instant::now();
+    let duration: time::Duration = finish.duration_since(start);
     let micros = duration.as_micros();
 
     println!("Total time: {}", micros as f64 / 1e6);

@@ -1,3 +1,4 @@
+use super::moves::Move;
 use std::fmt;
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
@@ -266,6 +267,24 @@ impl Position {
             o_home: self.x_home,
             x_home: self.o_home,
         }
+    }
+
+    pub fn apply_o_move(&self, o_move: &Move) -> Position {
+        let mut result: Position = *self;
+        for checker_move in o_move.moves() {
+            if checker_move.is_entering() {
+                result = result.with_o_entering(checker_move.dst_point());
+            } else if checker_move.is_bearing_off() {
+                result = result.with_o_bearing_off(checker_move.src_point());
+            } else {
+                result = result.with_o_move(checker_move.src_point(), checker_move.dst_point());
+            }
+        }
+        result
+    }
+
+    pub fn apply_x_move(&self, x_move: &Move) -> Position {
+        self.flip().apply_o_move(x_move).flip()
     }
 }
 

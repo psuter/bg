@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 use bg_core::dice::Dice;
+use bg_core::game::{Game, Match};
 use bg_core::moves::{CheckerMove, Move};
 
 grammar;
@@ -89,14 +90,30 @@ pub MoveOrCubeAction: Option<Move> = {
 // second player is starting, or there was a cube action (FIXME support them).
 pub Turn: (Option<Move>, Option<Move>) = {
     <t:TurnIndex> <m1:MoveOrCubeAction> <m2:MoveOrCubeAction> => (m1, m2),
-    <t:TurnIndex> <m2:MoveOrCubeAction> => (None, m2),
+    <t:TurnIndex> <m:MoveOrCubeAction> => {
+        if t == 1 {
+            // At the start of a game, indicates that the `x` player started.
+            (None, m)
+        } else {
+            (m, None)
+        }
+    },
 }
 
-pub Game: () = {
-    
+pub GameFooter: () = {
+    "Wins 1 point" => (),
+    "Wins" <i:NonZeroIntLiteral> "points" => (),
 }
 
-pub Match: () = {
-   // MatchHeader Game*
+pub MatchFooter: () = {
+    "and the match" => (),
+}
+
+pub Game: Game = {
+    <h:GameHeader> <t:(Turn)*> <f:GameFooter> => Game::make(t),
+}
+
+pub Match: Match = {
+   <h:MatchHeader> <g:(Game)*> <f:MatchFooter> => Match::make(g),
 }
 

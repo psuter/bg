@@ -1,14 +1,22 @@
 #[macro_use]
 extern crate lalrpop_util;
 
+lalrpop_mod!(#[allow(clippy::all)] pub bg_game);
+
+use bg_core::game::Match;
+
+// Public entrypoint.
+pub fn parse_match(str: &str) -> Option<Match> {
+    let parser = bg_game::MatchParser::new();
+    parser.parse(str).ok()
+}
+
 #[cfg(test)]
 use bg_core::dice::Dice;
 #[cfg(test)]
 use bg_core::moves::CheckerMove;
 #[cfg(test)]
 use bg_core::moves::Move;
-
-lalrpop_mod!(#[allow(clippy::all)] pub bg_game);
 
 #[test]
 fn test_parse_player_identifier() {
